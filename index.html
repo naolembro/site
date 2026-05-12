@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#6d28d9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Alef Study+" />
+  <title>Alef Study+</title>
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --purple-950: #2e1065;
+      --purple-900: #3b0764;
+      --purple-800: #581c87;
+      --purple-700: #6d28d9;
+      --purple-600: #7c3aed;
+      --purple-500: #8b5cf6;
+      --blue: #38bdf8;
+      --yellow: #facc15;
+      --bg: #f8f7ff;
+      --surface: rgba(255,255,255,.9);
+      --surface-solid: #ffffff;
+      --text: #161025;
+      --muted: #6b647c;
+      --border: rgba(80, 54, 145, .14);
+      --shadow: 0 20px 60px rgba(46, 16, 101, .13);
+      --radius: 26px;
+      --nav-h: 78px;
+      --danger: #ef4444;
+      --success: #16a34a;
+    }
+
+    .dark {
+      --bg: #0e0a19;
+      --surface: rgba(28, 20, 48, .86);
+      --surface-solid: #1b1430;
+      --text: #f6f1ff;
+      --muted: #b8add2;
+      --border: rgba(255,255,255,.1);
+      --shadow: 0 24px 70px rgba(0,0,0,.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(124,58,237,.22), transparent 34%),
+        radial-gradient(circle at top right, rgba(56,189,248,.18), transparent 30%),
+        linear-gradient(180deg, var(--bg), var(--bg));
+      overscroll-behavior: none;
+    }
+
+    button, .nav-item, .tab-btn, select, .drawer-option {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    input, textarea, select, button {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .hidden { display: none !important; }
+
+    .login-screen {
+      min-height: 100vh;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(250,204,21,.2), transparent 25%),
+        radial-gradient(circle at 90% 20%, rgba(56,189,248,.28), transparent 28%),
+        linear-gradient(135deg, #4c1d95, #6d28d9 52%, #2e1065);
+    }
+
+    .login-card {
+      width: min(440px, 100%);
+      padding: 34px;
+      border-radius: 34px;
+      background: rgba(255,255,255,.94);
+      box-shadow: 0 28px 90px rgba(0,0,0,.26);
+      animation: rise .55s ease both;
+    }
+
+    .brand-mark {
+      width: 62px;
+      height: 62px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      font-weight: 950;
+      color: #fff;
+      background: linear-gradient(135deg, var(--purple-700), var(--blue));
+      box-shadow: 0 16px 34px rgba(109,40,217,.28);
+      margin-bottom: 18px;
+    }
+
+    .login-card h1 {
+      margin: 0 0 8px;
+      color: #201038;
+      letter-spacing: -1px;
+      font-size: 2.2rem;
+    }
+
+    .login-card p {
+      margin: 0 0 24px;
+      color: #675d79;
+      line-height: 1.45;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      font-weight: 800;
+      color: var(--text);
+      font-size: .92rem;
+    }
+
+    .login-card .field label { color: #2c2044; }
+
+    .input, .select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 15px;
+      outline: none;
+      color: var(--text);
+      background: var(--surface-solid);
+      transition: .2s ease;
+    }
+
+    .login-card .input {
+      color: #201038;
+      background: #fff;
+    }
+
+    .input:focus, textarea:focus, .select:focus {
+      border-color: rgba(124,58,237,.55);
+      box-shadow: 0 0 0 4px rgba(124,58,237,.12);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 16px;
+      border-radius: 17px;
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(135deg, var(--purple-700), var(--purple-500));
+      box-shadow: 0 12px 28px rgba(124,58,237,.25);
+      transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); filter: brightness(1.04); }
+    .btn:active { transform: translateY(0); }
+
+    .btn.secondary {
+      color: var(--purple-700);
+      background: rgba(124,58,237,.1);
+      box-shadow: none;
+    }
+
+    .btn.danger {
+      background: linear-gradient(135deg, #dc2626, #fb7185);
+      box-shadow: 0 12px 28px rgba(239,68,68,.22);
+    }
+
+    .btn.ghost {
+      background: transparent;
+      color: var(--muted);
+      box-shadow: none;
+    }
+
+    .btn.full { width: 100%; }
+
+    .login-error {
+      color: #dc2626;
+      font-weight: 800;
+      min-height: 22px;
+      margin-top: 8px;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 16px);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: calc(12px + env(safe-area-inset-top)) 18px 12px;
+      backdrop-filter: blur(20px);
+      background: linear-gradient(180deg, rgba(248,247,255,.92), rgba(248,247,255,.72));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dark .topbar {
+      background: linear-gradient(180deg, rgba(14,10,25,.92), rgba(14,10,25,.72));
+    }
+
+    .topbar-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 950;
+      font-size: 1.18rem;
+      letter-spacing: -.4px;
+    }
+
+    .brand .mini-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(135deg, var(--purple-700), var(--blue));
+      box-shadow: 0 12px 24px rgba(124,58,237,.2);
+    }
+
+    .main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px 18px 0;
+    }
+
+    .hero {
+      border-radius: 34px;
+      padding: clamp(24px, 5vw, 48px);
+      background:
+        radial-gradient(circle at top right, rgba(56,189,248,.23), transparent 30%),
+        radial-gradient(circle at 12% 20%, rgba(250,204,21,.18), transparent 24%),
+        linear-gradient(135deg, rgba(109,40,217,.96), rgba(46,16,101,.97));
+      color: white;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+      overflow: hidden;
+      position: relative;
+      animation: rise .45s ease both;
+    }
+
+    .hero:after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 44px;
+      right: -80px;
+      bottom: -100px;
+      transform: rotate(22deg);
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 6vw, 4.5rem);
+      line-height: .96;
+      letter-spacing: -2.5px;
+      max-width: 900px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255,255,255,.84);
+      max-width: 820px;
+      font-size: clamp(1rem, 2.3vw, 1.25rem);
+      line-height: 1.55;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn .24s ease both;
+    }
+
+    .page.active { display: block; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .panel {
+      grid-column: span 12;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .panel h3 {
+      margin: 0 0 16px;
+      font-size: 1.28rem;
+      letter-spacing: -.4px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+      align-items: end;
+    }
+
+    .col-2 { grid-column: span 2; }
+    .col-3 { grid-column: span 3; }
+    .col-4 { grid-column: span 4; }
+    .col-5 { grid-column: span 5; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+    .col-12 { grid-column: span 12; }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 16px;
+      background: var(--surface-solid);
+      box-shadow: 0 12px 28px rgba(46,16,101,.07);
+      transition: .18s ease;
+    }
+
+    .card:hover { transform: translateY(-2px); }
+
+    .card-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: start;
+      font-weight: 950;
+      margin-bottom: 6px;
+    }
+
+    .muted { color: var(--muted); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: .78rem;
+      font-weight: 900;
+      color: var(--purple-700);
+      background: rgba(124,58,237,.11);
+    }
+
+    .study-day {
+      display: grid;
+      gap: 10px;
+    }
+
+    .day-title {
+      font-weight: 950;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .study-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(124,58,237,.08), rgba(56,189,248,.08));
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+      color: var(--danger);
+      background: rgba(239,68,68,.1);
+      font-weight: 950;
+      flex: 0 0 auto;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      background: var(--surface-solid);
+    }
+
+    th, td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: .84rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: minmax(250px, 420px) 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: var(--surface-solid);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.45rem;
+      margin-top: 6px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 35;
+      padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(255,255,255,.86);
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(22px);
+    }
+
+    .dark .bottom-nav { background: rgba(18,13,33,.88); }
+
+    .nav-list {
+      max-width: 720px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+
+    .nav-item {
+      display: grid;
+      place-items: center;
+      gap: 3px;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 18px;
+      padding: 8px 4px;
+      font-size: .68rem;
+      font-weight: 850;
+      transition: .18s ease;
+    }
+
+    .nav-item span:first-child {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+
+    .nav-item.active {
+      color: var(--purple-700);
+      background: rgba(124,58,237,.12);
+    }
+
+    .drawer-backdrop, .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(0,0,0,.38);
+      opacity: 0;
+      pointer-events: none;
+      transition: .22s ease;
+    }
+
+    .drawer-backdrop.open, .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 90;
+      padding: 12px 16px calc(18px + env(safe-area-inset-bottom));
+      border-radius: 28px 28px 0 0;
+      background: var(--surface-solid);
+      transform: translateY(105%);
+      transition: .26s cubic-bezier(.2,.9,.2,1);
+      box-shadow: 0 -24px 70px rgba(0,0,0,.23);
+    }
+
+    .drawer.open { transform: translateY(0); }
+
+    .drawer-handle {
+      width: 46px;
+      height: 5px;
+      border-radius: 99px;
+      background: var(--border);
+      margin: 0 auto 12px;
+    }
+
+    .drawer-title {
+      font-weight: 950;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .drawer-options {
+      display: grid;
+      gap: 8px;
+      max-height: 55vh;
+      overflow: auto;
+    }
+
+    .drawer-option {
+      width: 100%;
+      text-align: left;
+      padding: 15px;
+      border-radius: 18px;
+      color: var(--text);
+      background: rgba(124,58,237,.08);
+      font-weight: 900;
+    }
+
+    .modal-card {
+      position: fixed;
+      inset: auto 16px 50%;
+      transform: translateY(60%) scale(.96);
+      z-index: 95;
+      max-width: 440px;
+      margin: auto;
+      padding: 22px;
+      border-radius: 26px;
+      background: var(--surface-solid);
+      box-shadow: 0 24px 80px rgba(0,0,0,.28);
+      opacity: 0;
+      pointer-events: none;
+      transition: .22s ease;
+    }
+
+    .modal-card.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(50%) scale(1);
+    }
+
+    .modal-card h3 { margin: 0 0 8px; }
+    .modal-card p { margin: 0 0 18px; color: var(--muted); line-height: 1.45; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    .empty {
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      background: rgba(124,58,237,.04);
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 820px) {
+      .summary-grid { grid-template-columns: 1fr; }
+      .hero { border-radius: 28px; }
+      .panel { padding: 16px; }
+      .form-grid > * { grid-column: span 12 !important; }
+      .topbar-inner { align-items: center; }
+      .topbar .btn { padding: 10px 12px; }
+      .nav-list { grid-template-columns: repeat(6, 1fr); }
+      .nav-item { font-size: .61rem; border-radius: 14px; }
+    }
+
+    @media (min-width: 900px) {
+      .panel.half { grid-column: span 6; }
+      .panel.third { grid-column: span 4; }
+    }
+  </style>
+</head>
+<body>
+  <section id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="brand-mark">A+</div>
+      <h1>Alef Study+</h1>
+      <p>Entra aí e organiza tua vida antes que tua versão adulta vire aquele NPC triste falando “eu tinha potencial”.</p>
+      <form id="loginForm">
+        <div class="field">
+          <label for="usernameInput">Usuário</label>
+          <input id="usernameInput" class="input" autocomplete="username" placeholder="Digite seu usuário" />
+        </div>
+        <div class="field">
+          <label for="passwordInput">Senha</label>
+          <input id="passwordInput" class="input" type="password" autocomplete="current-password" placeholder="Digite a senha" />
+        </div>
+        <button class="btn full" type="submit">Entrar no Alef Study+</button>
+        <div id="loginError" class="login-error"></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="appShell" class="app-shell hidden">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="mini-logo">A+</div>
+          <span>Alef Study+</span>
+        </div>
+        <button id="logoutBtn" class="btn secondary">Sair</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="hero">
+        <h2>Disciplina pesa gramas. Arrependimento pesa toneladas.</h2>
+        <p>Teu futuro não vai surgir magicamente do nada. Cada hora estudando hoje é uma chance menor de virar adulto que fala ‘eu tinha potencial’.</p>
+      </section>
+
+      <section id="page-cronograma" class="page active">
+        <div class="grid">
+          <div class="panel">
+            <h3>Adicionar estudo no cronograma</h3>
+            <div class="form-grid">
+              <div class="field col-3">
+                <label>Dia</label>
+                <button id="dayDrawerBtn" class="input" type="button" style="text-align:left">Segunda</button>
+              </div>
+              <div class="field col-3">
+                <label>Horário</label>
+                <button id="timeDrawerBtn" class="input" type="button" style="text-align:left">Nenhum horário</button>
+              </div>
+              <div class="field col-3">
+                <label>Matéria</label>
+                <button id="subjectDrawerBtn" class="input" type="button" style="text-align:left">Selecione</button>
+              </div>
+              <div class="field col-3">
+                <label>Tarefa/foco</label>
+                <input id="studyFocus" class="input" placeholder="Ex: lista, revisão..." />
+              </div>
+              <button id="addStudyBtn" class="btn col-12">Adicionar estudo</button>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Semana de estudos</h3>
+            <div id="scheduleCards" class="cards"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-materias" class="page">
+        <div class="grid">
+          <div class="panel half">
+            <h3>Cadastrar matéria</h3>
+            <div class="form-grid">
+              <div class="field col-12">
+                <label>Nome da matéria</label>
+                <input id="subjectName" class="input" placeholder="Matemática, Biologia..." />
+              </div>
+              <div class="field col-12">
+                <label>Prioridade</label>
+                <button id="priorityDrawerBtn" class="input" type="button" style="text-align:left">Média</button>
+              </div>
+              <div class="field col-12">
+                <label>Observação</label>
+                <textarea id="subjectNote" rows="4" placeholder="O que precisa melhorar nessa matéria?"></textarea>
+              </div>
+              <button id="addSubjectBtn" class="btn col-12">Salvar matéria</button>
+            </div>
+          </div>
+          <div class="panel half">
+            <h3>Matérias cadastradas</h3>
+            <div id="subjectCards" class="cards"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-financas" class="page">
+        <div class="grid">
+          <div class="panel">
+            <h3>Adicionar gasto</h3>
+            <div class="form-grid">
+              <div class="field col-2">
+                <label>Valor</label>
+                <input id="expenseValue" class="input" type="number" min="0" step="0.01" placeholder="0,00" />
+              </div>
+              <div class="field col-3">
+                <label>Categoria</label>
+                <select id="expenseCategory" class="select"></select>
+              </div>
+              <div class="field col-4">
+                <label>Descrição</label>
+                <input id="expenseDesc" class="input" placeholder="Almoço, ônibus, rolê..." />
+              </div>
+              <div class="field col-3">
+                <label>Data</label>
+                <input id="expenseDate" class="input" type="date" />
+              </div>
+              <button id="addExpenseBtn" class="btn col-12">Adicionar gasto</button>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Gastos</h3>
+            <div class="stat-grid">
+              <div class="stat"><span class="muted">Total gasto</span><strong id="totalSpent">R$ 0,00</strong></div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead>
+                <tbody id="expenseTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-resumo" class="page">
+        <div class="panel">
+          <h3>Resumo financeiro</h3>
+          <div class="summary-grid">
+            <div class="card">
+              <canvas id="financeChart" height="280"></canvas>
+            </div>
+            <div>
+              <div class="stat-grid">
+                <div class="stat"><span class="muted">Valor total</span><strong id="summaryTotal">R$ 0,00</strong></div>
+                <div class="stat"><span class="muted">Categoria mais usada</span><strong id="topCategory">-</strong></div>
+                <div class="stat"><span class="muted">Registros</span><strong id="expenseCount">0</strong></div>
+              </div>
+              <div id="categorySummary" class="cards"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-horarios" class="page">
+        <div class="grid">
+          <div class="panel half">
+            <h3>Personalizar horários</h3>
+            <div class="form-grid">
+              <div class="field col-6">
+                <label>Horário inicial</label>
+                <input id="timeStart" class="input" type="time" />
+              </div>
+              <div class="field col-6">
+                <label>Horário final</label>
+                <input id="timeEnd" class="input" type="time" />
+              </div>
+              <button id="addTimeBtn" class="btn col-12">Salvar horário</button>
+            </div>
+          </div>
+          <div class="panel half">
+            <h3>Horários salvos</h3>
+            <div id="timeCards" class="cards"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-config" class="page">
+        <div class="grid">
+          <div class="panel half">
+            <h3>Configurações</h3>
+            <p class="muted">Sistema com login local, salvamento automático e modo escuro seguindo o tema do dispositivo.</p>
+            <div style="display:grid; gap:10px; margin-top:16px">
+              <button id="installBtn" class="btn secondary hidden">Adicionar à tela inicial</button>
+              <button id="deleteAccountBtn" class="btn danger">Excluir Conta</button>
+            </div>
+          </div>
+          <div class="panel half">
+            <h3>Usuário</h3>
+            <div class="stat"><span class="muted">Logado como</span><strong id="currentUserText">alef</strong></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <div class="nav-list">
+        <a class="nav-item active" href="#/" data-route="cronograma"><span>📅</span><span>Cronograma</span></a>
+        <a class="nav-item" href="#/materias" data-route="materias"><span>📚</span><span>Matérias</span></a>
+        <a class="nav-item" href="#/financas" data-route="financas"><span>💳</span><span>Finanças</span></a>
+        <a class="nav-item" href="#/resumo" data-route="resumo"><span>📊</span><span>Resumo</span></a>
+        <a class="nav-item" href="#/horarios" data-route="horarios"><span>⏰</span><span>Horários</span></a>
+        <a class="nav-item" href="#/config" data-route="config"><span>⚙️</span><span>Config</span></a>
+      </div>
+    </nav>
+  </section>
+
+  <div id="drawerBackdrop" class="drawer-backdrop"></div>
+  <aside id="drawer" class="drawer">
+    <div class="drawer-handle"></div>
+    <div id="drawerTitle" class="drawer-title">Selecionar</div>
+    <div id="drawerOptions" class="drawer-options"></div>
+  </aside>
+
+  <div id="modalBackdrop" class="modal-backdrop"></div>
+  <div id="confirmModal" class="modal-card">
+    <h3>Excluir conta?</h3>
+    <p>Isso apaga login, matérias, gastos, horários e cronograma salvos neste navegador. É o botão nuclear, o Thanos do localStorage.</p>
+    <div class="modal-actions">
+      <button id="cancelDeleteBtn" class="btn ghost">Cancelar</button>
+      <button id="confirmDeleteBtn" class="btn danger">Excluir tudo</button>
+    </div>
+  </div>
+
+  <script>
+    const APP_KEY = 'alefStudyPlus.v2';
+    const FIXED_PASSWORD = '010305Alef.22';
+    const DEFAULT_USER = 'alef';
+    const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+    const priorities = ['Baixa', 'Média', 'Alta', 'Urgente'];
+    const categories = ['alimentação', 'transporte', 'lazer', 'estudo', 'conta/dívida', 'namoro/saída', 'outros'];
+    const routeMap = {
+      '#/': 'cronograma',
+      '#/materias': 'materias',
+      '#/financas': 'financas',
+      '#/resumo': 'resumo',
+      '#/horarios': 'horarios',
+      '#/config': 'config'
+    };
+
+    const initialState = {
+      loggedIn: false,
+      username: DEFAULT_USER,
+      subjects: [],
+      expenses: [],
+      times: [
+        { id: cryptoId(), start: '14:00', end: '17:00' },
+        { id: cryptoId(), start: '17:00', end: '20:00' }
+      ],
+      schedule: []
+    };
+
+    let state = loadState();
+    let selectedDay = 'Segunda';
+    let selectedTimeId = state.times[0]?.id || '';
+    let selectedSubjectId = state.subjects[0]?.id || '';
+    let selectedPriority = 'Média';
+    let chart = null;
+    let deferredPrompt = null;
+
+    const $ = (id) => document.getElementById(id);
+    const money = (value) => Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    function cryptoId() {
+      return (crypto?.randomUUID?.() || Math.random().toString(36).slice(2)) + Date.now();
+    }
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(APP_KEY));
+        return { ...initialState, ...(saved || {}) };
+      } catch {
+        return { ...initialState };
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(APP_KEY, JSON.stringify(state));
+    }
+
+    function setState(patch) {
+      state = { ...state, ...patch };
+      saveState();
+      renderAll();
+    }
+
+    function boot() {
+      setupDarkModeListener();
+      setupPwa();
+      bindEvents();
+      renderAll();
+      showAuthState();
+      handleRoute();
+    }
+
+    function showAuthState() {
+      $('loginScreen').classList.toggle('hidden', state.loggedIn);
+      $('appShell').classList.toggle('hidden', !state.loggedIn);
+      $('currentUserText').textContent = state.username || DEFAULT_USER;
+    }
+
+    function bindEvents() {
+      $('loginForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = $('usernameInput').value.trim() || DEFAULT_USER;
+        const password = $('passwordInput').value;
+        if (password === FIXED_PASSWORD) {
+          $('loginError').textContent = '';
+          setState({ loggedIn: true, username });
+          showAuthState();
+        } else {
+          $('loginError').textContent = 'Senha errada, patrão. Tenta de novo.';
+        }
+      });
+
+      $('logoutBtn').addEventListener('click', () => {
+        setState({ loggedIn: false });
+        showAuthState();
+      });
+
+      window.addEventListener('hashchange', handleRoute);
+
+      $('dayDrawerBtn').addEventListener('click', () => openDrawer('Escolher dia', days, selectedDay, (value) => {
+        selectedDay = value; updateSelectionLabels();
+      }));
+
+      $('timeDrawerBtn').addEventListener('click', () => openDrawer('Escolher horário', state.times.map(t => ({ label: `${t.start}–${t.end}`, value: t.id })), selectedTimeId, (value) => {
+        selectedTimeId = value; updateSelectionLabels();
+      }));
+
+      $('subjectDrawerBtn').addEventListener('click', () => openDrawer('Escolher matéria', state.subjects.map(s => ({ label: s.name, value: s.id })), selectedSubjectId, (value) => {
+        selectedSubjectId = value; updateSelectionLabels();
+      }));
+
+      $('priorityDrawerBtn').addEventListener('click', () => openDrawer('Prioridade', priorities, selectedPriority, (value) => {
+        selectedPriority = value; updateSelectionLabels();
+      }));
+
+      $('addStudyBtn').addEventListener('click', addStudy);
+      $('addSubjectBtn').addEventListener('click', addSubject);
+      $('addExpenseBtn').addEventListener('click', addExpense);
+      $('addTimeBtn').addEventListener('click', addTime);
+
+      $('deleteAccountBtn').addEventListener('click', openDeleteModal);
+      $('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
+      $('modalBackdrop').addEventListener('click', closeDeleteModal);
+      $('confirmDeleteBtn').addEventListener('click', deleteAccount);
+
+      $('drawerBackdrop').addEventListener('click', closeDrawer);
+      $('expenseDate').valueAsDate = new Date();
+
+      $('installBtn').addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        $('installBtn').classList.add('hidden');
+      });
+    }
+
+    function handleRoute() {
+      const key = routeMap[location.hash || '#/'] ? (location.hash || '#/') : '#/';
+      const page = routeMap[key];
+      document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+      document.querySelector(`#page-${page}`)?.classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.route === page));
+      if (page === 'resumo') setTimeout(renderChart, 40);
+    }
+
+    function addSubject() {
+      const name = $('subjectName').value.trim();
+      const note = $('subjectNote').value.trim();
+      if (!name) return;
+      const subject = { id: cryptoId(), name, priority: selectedPriority, note };
+      state.subjects.unshift(subject);
+      selectedSubjectId = subject.id;
+      $('subjectName').value = '';
+      $('subjectNote').value = '';
+      saveState();
+      renderAll();
+    }
+
+    function removeSubject(id) {
+      state.subjects = state.subjects.filter(s => s.id !== id);
+      state.schedule = state.schedule.filter(item => item.subjectId !== id);
+      if (selectedSubjectId === id) selectedSubjectId = state.subjects[0]?.id || '';
+      saveState();
+      renderAll();
+    }
+
+    function addStudy() {
+      const time = state.times.find(t => t.id === selectedTimeId);
+      const subject = state.subjects.find(s => s.id === selectedSubjectId);
+      const focus = $('studyFocus').value.trim();
+      if (!time || !subject) return alert('Cadastre pelo menos uma matéria e um horário primeiro.');
+      state.schedule.push({ id: cryptoId(), day: selectedDay, timeId: time.id, subjectId: subject.id, focus });
+      $('studyFocus').value = '';
+      saveState();
+      renderAll();
+    }
+
+    function removeStudy(id) {
+      state.schedule = state.schedule.filter(item => item.id !== id);
+      saveState();
+      renderAll();
+    }
+
+    function addExpense() {
+      const value = Number($('expenseValue').value);
+      const category = $('expenseCategory').value;
+      const desc = $('expenseDesc').value.trim();
+      const date = $('expenseDate').value || new Date().toISOString().slice(0, 10);
+      if (!value || value <= 0) return;
+      state.expenses.unshift({ id: cryptoId(), value, category, desc, date });
+      $('expenseValue').value = '';
+      $('expenseDesc').value = '';
+      saveState();
+      renderAll();
+    }
+
+    function removeExpense(id) {
+      state.expenses = state.expenses.filter(e => e.id !== id);
+      saveState();
+      renderAll();
+    }
+
+    function addTime() {
+      const start = $('timeStart').value;
+      const end = $('timeEnd').value;
+      if (!start || !end) return;
+      if (start >= end) return alert('O horário final precisa ser depois do inicial, né. Senão tu descobriu viagem no tempo.');
+      const time = { id: cryptoId(), start, end };
+      state.times.push(time);
+      selectedTimeId = time.id;
+      $('timeStart').value = '';
+      $('timeEnd').value = '';
+      saveState();
+      renderAll();
+    }
+
+    function removeTime(id) {
+      state.times = state.times.filter(t => t.id !== id);
+      state.schedule = state.schedule.filter(item => item.timeId !== id);
+      if (selectedTimeId === id) selectedTimeId = state.times[0]?.id || '';
+      saveState();
+      renderAll();
+    }
+
+    function renderAll() {
+      renderCategories();
+      renderSubjects();
+      renderTimes();
+      renderSchedule();
+      renderExpenses();
+      renderSummary();
+      updateSelectionLabels();
+      showAuthState();
+    }
+
+    function updateSelectionLabels() {
+      const time = state.times.find(t => t.id === selectedTimeId);
+      const subject = state.subjects.find(s => s.id === selectedSubjectId);
+      $('dayDrawerBtn').textContent = selectedDay;
+      $('timeDrawerBtn').textContent = time ? `${time.start}–${time.end}` : 'Nenhum horário';
+      $('subjectDrawerBtn').textContent = subject ? subject.name : 'Selecione';
+      $('priorityDrawerBtn').textContent = selectedPriority;
+    }
+
+    function renderCategories() {
+      $('expenseCategory').innerHTML = categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    }
+
+    function renderSubjects() {
+      const box = $('subjectCards');
+      if (!state.subjects.length) {
+        box.innerHTML = `<div class="empty">Nenhuma matéria ainda. Cadastra uma aí, senão o cronograma vira decoração.</div>`;
+        return;
+      }
+      box.innerHTML = state.subjects.map(s => `
+        <div class="card">
+          <div class="card-title">
+            <span>${escapeHtml(s.name)}</span>
+            <span class="badge">${escapeHtml(s.priority)}</span>
+          </div>
+          <p class="muted">${escapeHtml(s.note || 'Sem observação')}</p>
+          <button class="icon-btn" onclick="removeSubject('${s.id}')">×</button>
+        </div>
+      `).join('');
+    }
+
+    function renderTimes() {
+      const box = $('timeCards');
+      if (!state.times.length) {
+        box.innerHTML = `<div class="empty">Sem horários. Adiciona pelo menos um bloco de estudo.</div>`;
+        return;
+      }
+      box.innerHTML = state.times.map(t => `
+        <div class="study-card">
+          <strong>${t.start}–${t.end}</strong>
+          <button class="icon-btn" onclick="removeTime('${t.id}')">×</button>
+        </div>
+      `).join('');
+    }
+
+    function renderSchedule() {
+      const box = $('scheduleCards');
+      box.innerHTML = days.map(day => {
+        const items = state.schedule.filter(item => item.day === day);
+        const content = items.length ? items.map(item => {
+          const time = state.times.find(t => t.id === item.timeId);
+          const subject = state.subjects.find(s => s.id === item.subjectId);
+          if (!time || !subject) return '';
+          return `
+            <div class="study-card">
+              <div>
+                <strong>${time.start}–${time.end} | ${escapeHtml(subject.name)}</strong>
+                <div class="muted">${escapeHtml(item.focus || 'Foco livre')}</div>
+              </div>
+              <button class="icon-btn" onclick="removeStudy('${item.id}')">×</button>
+            </div>
+          `;
+        }).join('') : `<div class="empty">Nada marcado. Perigo: dia fantasma.</div>`;
+        return `<div class="card study-day"><div class="day-title">${day}</div>${content}</div>`;
+      }).join('');
+    }
+
+    function renderExpenses() {
+      const total = state.expenses.reduce((sum, e) => sum + Number(e.value), 0);
+      $('totalSpent').textContent = money(total);
+      const tbody = $('expenseTable');
+      if (!state.expenses.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="muted">Nenhum gasto registrado.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = state.expenses.map(e => `
+        <tr>
+          <td>${formatDate(e.date)}</td>
+          <td><span class="badge">${escapeHtml(e.category)}</span></td>
+          <td>${escapeHtml(e.desc || '-')}</td>
+          <td><strong>${money(e.value)}</strong></td>
+          <td><button class="icon-btn" onclick="removeExpense('${e.id}')">×</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderSummary() {
+      const totals = getCategoryTotals();
+      const total = Object.values(totals).reduce((a,b) => a + b, 0);
+      const sorted = Object.entries(totals).sort((a,b) => b[1] - a[1]);
+      $('summaryTotal').textContent = money(total);
+      $('topCategory').textContent = sorted[0]?.[0] || '-';
+      $('expenseCount').textContent = state.expenses.length;
+      $('categorySummary').innerHTML = sorted.length ? sorted.map(([cat, value]) => {
+        const pct = total ? ((value / total) * 100).toFixed(1) : 0;
+        return `<div class="card"><div class="card-title"><span>${escapeHtml(cat)}</span><span>${pct}%</span></div><strong>${money(value)}</strong></div>`;
+      }).join('') : `<div class="empty">Sem gastos para resumir.</div>`;
+      renderChart();
+    }
+
+    function renderChart() {
+      const canvas = $('financeChart');
+      if (!canvas || !document.querySelector('#page-resumo.active')) return;
+      const totals = getCategoryTotals();
+      const labels = Object.keys(totals);
+      const data = Object.values(totals);
+      if (chart) chart.destroy();
+      chart = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+          labels: labels.length ? labels : ['Sem gastos'],
+          datasets: [{
+            data: data.length ? data : [1],
+            backgroundColor: ['#7c3aed', '#38bdf8', '#facc15', '#a78bfa', '#22c55e', '#fb7185', '#64748b'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text') || '#111' } }
+          },
+          cutout: '68%'
+        }
+      });
+    }
+
+    function getCategoryTotals() {
+      return state.expenses.reduce((acc, e) => {
+        acc[e.category] = (acc[e.category] || 0) + Number(e.value);
+        return acc;
+      }, {});
+    }
+
+    function openDrawer(title, options, selected, onSelect) {
+      const normalized = options.map(o => typeof o === 'string' ? { label: o, value: o } : o);
+      $('drawerTitle').textContent = title;
+      $('drawerOptions').innerHTML = normalized.length ? normalized.map(o => `
+        <button class="drawer-option" data-value="${escapeAttr(o.value)}">${o.value === selected ? '✓ ' : ''}${escapeHtml(o.label)}</button>
+      `).join('') : `<div class="empty">Nada para selecionar ainda.</div>`;
+      document.querySelectorAll('.drawer-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+          onSelect(btn.dataset.value);
+          closeDrawer();
+        });
+      });
+      $('drawerBackdrop').classList.add('open');
+      $('drawer').classList.add('open');
+    }
+
+    function closeDrawer() {
+      $('drawerBackdrop').classList.remove('open');
+      $('drawer').classList.remove('open');
+    }
+
+    function openDeleteModal() {
+      $('modalBackdrop').classList.add('open');
+      $('confirmModal').classList.add('open');
+    }
+
+    function closeDeleteModal() {
+      $('modalBackdrop').classList.remove('open');
+      $('confirmModal').classList.remove('open');
+    }
+
+    function deleteAccount() {
+      localStorage.removeItem(APP_KEY);
+      state = { ...initialState, loggedIn: false };
+      closeDeleteModal();
+      renderAll();
+      showAuthState();
+    }
+
+    function setupDarkModeListener() {
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      const apply = () => document.documentElement.classList.toggle('dark', media.matches);
+      apply();
+      media.addEventListener?.('change', apply);
+    }
+
+    function setupPwa() {
+      const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="120" fill="#6d28d9"/><circle cx="382" cy="118" r="74" fill="#38bdf8" opacity=".9"/><circle cx="120" cy="402" r="78" fill="#facc15" opacity=".9"/><text x="86" y="308" font-family="Arial, sans-serif" font-size="150" font-weight="900" fill="white">A+</text></svg>`;
+      const iconUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgIcon)));
+      const manifest = {
+        name: 'Alef Study+',
+        short_name: 'Alef Study+',
+        start_url: '.',
+        display: 'standalone',
+        background_color: '#6d28d9',
+        theme_color: '#6d28d9',
+        orientation: 'portrait',
+        icons: [
+          { src: iconUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+          { src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+        ]
+      };
+      const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+      const manifestUrl = URL.createObjectURL(manifestBlob);
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = manifestUrl;
+      document.head.appendChild(link);
+      const appleIcon = document.createElement('link');
+      appleIcon.rel = 'apple-touch-icon';
+      appleIcon.href = iconUrl;
+      document.head.appendChild(appleIcon);
+
+      if ('serviceWorker' in navigator) {
+        const swCode = `
+          const CACHE = 'alef-study-plus-cache-v2';
+          self.addEventListener('install', event => {
+            event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(['./'])));
+            self.skipWaiting();
+          });
+          self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
+          self.addEventListener('fetch', event => {
+            event.respondWith(fetch(event.request).catch(() => caches.match(event.request).then(r => r || caches.match('./'))));
+          });
+        `;
+        const swBlob = new Blob([swCode], { type: 'text/javascript' });
+        const swUrl = URL.createObjectURL(swBlob);
+        navigator.serviceWorker.register(swUrl).catch(() => {});
+      }
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        $('installBtn')?.classList.remove('hidden');
+      });
+    }
+
+    function formatDate(date) {
+      if (!date) return '-';
+      const [y, m, d] = date.split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;'}[c]));
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/`/g, '&#96;');
+    }
+
+    window.removeSubject = removeSubject;
+    window.removeStudy = removeStudy;
+    window.removeExpense = removeExpense;
+    window.removeTime = removeTime;
+
+    boot();
+  </script>
+</body>
+</html>
